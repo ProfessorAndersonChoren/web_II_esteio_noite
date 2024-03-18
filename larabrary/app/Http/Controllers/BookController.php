@@ -45,4 +45,30 @@ class BookController extends Controller
         $book->delete();
         return redirect()->route('book.index');
     }
+
+    public function edit(int $id)
+    {
+        $book = Book::findOrFail($id);
+        return view('auth.edit-book', compact('book'));
+    }
+
+    public function update(Request $request, int $id)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'isbn' => 'required|min:13|max:17',
+                'title' => 'required|string|min:3',
+                'author' => 'required|string|min:3',
+                'publisher' => 'required|string|min:3',
+                'pages' => 'required|numeric'
+            ]
+        );
+        if ($validator->fails()) {
+            return redirect()->route('book.edit', ['id' => $id]);
+        }
+        $book = Book::findOrFail($id);
+        $book->update($request->all());
+        return redirect()->route('book.index');
+    }
 }
